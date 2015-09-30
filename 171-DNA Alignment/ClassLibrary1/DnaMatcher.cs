@@ -23,13 +23,16 @@ namespace ClassLibrary1
 
         struct Entry
         {
-            public Entry(int maxScore, int gapScore)
+            public Entry(int maxScore, int vScore, int hScore)
             {
                 this.maxScore = maxScore;
-                this.gapScore = gapScore;
+                this.hScore = hScore;
+                this.vScore = vScore;
             }
 
-            public int gapScore;
+            public int hScore;
+
+            public int vScore;
 
             public int maxScore;
 
@@ -56,15 +59,17 @@ namespace ClassLibrary1
             // add gap edges
             for (int ai = 1; ai <= al; ai++)
             {
-                matrix[ai, 0] = new Entry(-8, -8);
+                var baseCost = GapStart + (ai - 1) * Gap;
+                matrix[ai, 0] = new Entry(baseCost, baseCost, baseCost + GapStart);
             }
 
             for (int bi = 1; bi <= bl; bi++)
             {
-                matrix[0, bi] = new Entry(-8, -8);
+                var baseCost = GapStart + (bi - 1) * Gap;
+                matrix[0, bi] = new Entry(baseCost, baseCost + GapStart, baseCost);
             }
 
-            matrix[0, 0] = new Entry(0, 0);
+            matrix[0, 0] = new Entry(0, -8, -8);
 
             // build main area
             for (int ai = 0; ai < al; ai++)
@@ -78,19 +83,21 @@ namespace ClassLibrary1
 
                     // check vertical
                     var above = matrix[ai, bi + 1];
-                    var vScore = Math.Max(
-                        above.gapScore + Gap,
+                    var vScore = Max(
+                        above.hScore + GapStart,
+                        above.vScore + Gap,
                         above.maxScore + GapStart);
 
                     // check horisontal
                     var left = matrix[ai + 1, bi];
-                    var hScore = Math.Max(
-                        left.gapScore + Gap,
+                    var hScore = Max(
+                        left.hScore + Gap,
+                        left.vScore + GapStart,
                         left.maxScore + GapStart);
 
                     // create entry
                     var maxScore = Max(dScore, vScore, hScore);
-                    matrix[ai + 1, bi + 1] = new Entry(maxScore, Math.Max(vScore, hScore));
+                    matrix[ai + 1, bi + 1] = new Entry(maxScore, vScore, hScore);
                 }
             }
 

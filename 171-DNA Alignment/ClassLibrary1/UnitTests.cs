@@ -11,7 +11,11 @@ namespace ClassLibrary1
     {
         [Theory]
         [InlineData("GAAAAAAT | GAAT", 1)]
+        [InlineData("GAAT | GAAAAAAT", 1)]
         [InlineData("GCATGCT | GATTACA", -3)]
+        [InlineData("GCATGCT | GATTACA", -3)]
+        [InlineData("ABCDEFGHIJABCDEFGHIJ | KLMNOPQRSTKLMNOPQRST", -54)]
+        [InlineData("KLMNOPQRSTKLMNOPQRST | ABCDEFGHIJABCDEFGHIJ", -54)]
         public void Score(string input, int expected)
         {
             var t = new DnaMatcher();
